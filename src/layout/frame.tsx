@@ -6,8 +6,8 @@ interface FrameProps {
 
 export default function Frame({ children }: FrameProps) {
   return (
-    <div className="w-screen bg-white">
-      <main className="max-w-frame-width w-full h-screen  mx-auto">
+    <div className="w-screen bg-primary">
+      <main className="max-w-frame-width w-full h-screen  mx-auto bg-white">
         {children}
       </main>
     </div>
