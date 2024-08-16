@@ -8,6 +8,7 @@ import React, {
 import { Send, Copy, Refresh } from "@/assets/icons";
 import AIProfile from "@/assets/icons/aiChat.png";
 import RecursiveFloatingContainer from "../RecursiveFloating";
+import { ChatData } from "./type";
 
 export function ChatInput() {
   const [input, setInput] = useState<string>("");
@@ -67,12 +68,6 @@ export function ChatInput() {
     </footer>
   );
 }
-
-type ChatData = {
-  id: number;
-  message: string;
-  self: boolean;
-};
 
 export function ChatMain() {
   const [chatData, setChatData] = useState<ChatData[]>([]);
