@@ -18,6 +18,10 @@ export function ChatInput() {
     maxHeight: "10vh",
   });
 
+  const [chatOnTopicData, setChatOnTopicData] = useRecoilState<
+    ChatStateType | undefined
+  >(ChatOnTopicState);
+
   const deferredTextareaStyle = useDeferredValue(textareaStyle);
 
   const textRef = useRef<HTMLTextAreaElement>(null);
@@ -62,8 +66,27 @@ export function ChatInput() {
               setTextAreaStyle({ ...textareaStyle, height: "auto" });
             }
           }}
+          value={input}
         ></textarea>
-        <button className="w-icon absolute top-0 right-4 h-full items-center flex">
+        <button
+          className="w-icon absolute top-0 right-4 h-full items-center flex"
+          onClick={() => {
+            if (chatOnTopicData)
+              setChatOnTopicData({
+                ...chatOnTopicData,
+                marker: chatOnTopicData.marker + 1,
+                data: [
+                  ...chatOnTopicData.data,
+                  {
+                    id: chatOnTopicData.marker + 1,
+                    message: input,
+                    self: true,
+                  },
+                ],
+              });
+            setInput("");
+          }}
+        >
           {Send()}
         </button>
       </div>
@@ -141,11 +164,9 @@ function ChatContainer({ chatData }: ChatContainerProps) {
                 className="flex flex-wrap gap-2 mt-4"
               >
                 <>
-                  <ChatSubQuestions question="adadada" />
-                  <ChatSubQuestions question="adadada" />
-                  <ChatSubQuestions question="adadada" />
-                  <ChatSubQuestions question="adadada" />
-                  <ChatSubQuestions question="adadada" />
+                  {chatData.sub?.map((q) => (
+                    <ChatSubQuestions key={q} question={q} />
+                  ))}
                 </>
               </RecursiveFloatingContainer>
             </>
@@ -161,8 +182,29 @@ interface ChatSubQuestionsProps {
 }
 
 function ChatSubQuestions({ question }: ChatSubQuestionsProps) {
+  const [chatOnTopicData, setChatOnTopicData] = useRecoilState<
+    ChatStateType | undefined
+  >(ChatOnTopicState);
+
   return (
-    <button className="block box-border min-h-[33px] py-[3px] px-4 border-[1px] border-primary text-center text-primary rounded-[18px] hover:bg-primary hover:text-white transition-colors ">
+    <button
+      className="block box-border min-h-[33px] py-[3px] px-4 border-[1px] border-primary text-center text-primary rounded-[18px] hover:bg-primary hover:text-white transition-colors"
+      onClick={() => {
+        if (chatOnTopicData)
+          setChatOnTopicData({
+            ...chatOnTopicData,
+            marker: chatOnTopicData.marker + 1,
+            data: [
+              ...chatOnTopicData.data,
+              {
+                id: chatOnTopicData.marker + 1,
+                message: question,
+                self: true,
+              },
+            ],
+          });
+      }}
+    >
       {question}
     </button>
   );

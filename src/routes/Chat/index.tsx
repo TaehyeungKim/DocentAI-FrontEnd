@@ -6,8 +6,9 @@ import {
   ChatOnTopicState,
   ChatTopicStateType,
   ChatStateType,
+  ChatState,
 } from "@/state";
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect } from "react";
 
 interface ChatProps {
   title: string;
@@ -15,6 +16,9 @@ interface ChatProps {
 
 export default function Chat({ title }: ChatProps) {
   const [topic, setTopic] = useRecoilState<ChatTopicStateType>(ChatTopicState);
+
+  const [allChatData, setAllChatData] =
+    useRecoilState<ChatStateType[]>(ChatState);
 
   const [chatOnTopicData, setChatOnTopicData] = useRecoilState<
     ChatStateType | undefined
@@ -26,16 +30,28 @@ export default function Chat({ title }: ChatProps) {
 
   useEffect(() => {
     if (topic && !chatOnTopicData)
-      setChatOnTopicData({
-        name: title,
-        data: [{ id: 0, message: "adadadad", self: false }],
-        marker: 0,
-      });
+      setAllChatData([
+        ...allChatData,
+        {
+          name: title,
+          data: [
+            {
+              id: 0,
+              message: `${title}에 오신 것을 환영합니다.`,
+              self: false,
+              sub: [
+                "작품 설명해줘",
+                "작가 설명해줘",
+                "비슷한 작품 추천해줘",
+                "감상 써줘",
+                "너는 어떤 기능들이 있어?",
+              ],
+            },
+          ],
+          marker: 0,
+        },
+      ]);
   }, [topic]);
-
-  useEffect(() => {
-    console.log(chatOnTopicData);
-  }, [chatOnTopicData]);
 
   return (
     <div className="flex flex-col h-screen">

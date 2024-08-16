@@ -30,6 +30,9 @@ export const ChatOnTopicState = selector<ChatStateType | undefined>({
   set: ({ set, get }, data) => {
     const topic = get(ChatTopicState);
     const old = get(ChatState);
-    set(ChatState, [...get(ChatState), data as ChatStateType]);
+
+    const target = old.find((data) => data.name === topic);
+
+    set(ChatState, [...old.filter((o) => o !== target), data as ChatStateType]);
   },
 });
