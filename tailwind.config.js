@@ -16,6 +16,7 @@ module.exports = {
         "ellipse-base": "calc(100% * 175/390)",
         "ellipse-sm": "calc(100% * 150/390)",
         icon: "calc(22rem/16)",
+        "icon-sm": "calc(15rem/16)",
         "chat-input": "40px",
         "chat-vertical-padding": "calc(20px - 0.6rem)",
       },
@@ -46,6 +47,9 @@ module.exports = {
         0px 8.8px 6.9px rgba(0, 0, 0, 0.022),
         0px 17.9px 14.2px rgba(0, 0, 0, 0.028)
         `,
+      },
+      borderRadius: {
+        "h-rounded": "50% 0",
       },
     },
   },
