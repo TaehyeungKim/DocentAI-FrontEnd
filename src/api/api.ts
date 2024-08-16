@@ -3,6 +3,7 @@ import { ChatData } from "@/components/ChatRelated/type";
 
 export const SendQuestion = (data: ChatQuestion): Promise<ChatData> => {
   //before connecting api
+  console.log(data);
   return new Promise((resolve, reject) => {
     setTimeout(
       () =>

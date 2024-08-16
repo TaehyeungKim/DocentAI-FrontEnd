@@ -33,11 +33,13 @@ export function ChatInput() {
   const textRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (tempResponseStore && chatOnTopicData)
+    if (tempResponseStore && chatOnTopicData) {
       setChatOnTopicData({
         ...chatOnTopicData,
         data: [...chatOnTopicData.data, tempResponseStore],
       });
+      setTempResponseStore(null);
+    }
   }, [tempResponseStore]);
 
   useLayoutEffect(() => {
@@ -85,6 +87,7 @@ export function ChatInput() {
         <button
           className="w-icon absolute top-0 right-4 h-full items-center flex"
           onClick={() => {
+            if (!input) return;
             if (chatOnTopicData) {
               setChatOnTopicData({
                 ...chatOnTopicData,
@@ -98,9 +101,10 @@ export function ChatInput() {
                   },
                 ],
               });
-              SendQuestion({ id: chatOnTopicData.marker, message: input }).then(
-                (response) => setTempResponseStore(response)
-              );
+              SendQuestion({
+                id: chatOnTopicData.marker + 1,
+                message: input,
+              }).then((response) => setTempResponseStore(response));
             }
             setInput("");
           }}
@@ -230,9 +234,10 @@ function ChatSubQuestions({ question }: ChatSubQuestionsProps) {
               },
             ],
           });
-          SendQuestion({ id: chatOnTopicData.marker, message: question }).then(
-            (response) => setTempResponseStore(response)
-          );
+          SendQuestion({
+            id: chatOnTopicData.marker + 1,
+            message: question,
+          }).then((response) => setTempResponseStore(response));
         }
       }}
     >
