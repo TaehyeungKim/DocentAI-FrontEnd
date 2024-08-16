@@ -68,53 +68,56 @@ export function ChatInput() {
   );
 }
 
+type ChatData = {
+  id: number;
+  message: string;
+  self: boolean;
+};
+
 export function ChatMain() {
+  const [chatData, setChatData] = useState<ChatData[]>([]);
+  const [id, setId] = useState(0);
+
+  // useEffect(() => {
+  //   setInterval(() => setId((id) => id + 1), 1000);
+  // }, []);
+
+  // useEffect(() => {
+  //   setChatData([...chatData, { id, message: "adadad", self: false }]);
+  // }, [id]);
+
   return (
     <main className="grow overflow-scroll p-7">
-      <ChatContainer
-        chatInfo={{
-          message: "adadadad",
-          self: true,
-        }}
-      />
-
-      <ChatContainer
-        chatInfo={{
-          message:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum velit ex, ultricies sed est et, dignissim tempor lorem. Integer maximus ac quam accumsan vestibulum. In et rhoncus nisi, eget luctus erat. Phasellus vel semper dui. Donec non ipsum sed eros ultricies elementum ac sollicitudin ante. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean euismod mi quis tempor lobortis. Aliquam non dolor turpis. Duis fermentum eros pulvinar laoreet pulvinar. Etiam nec mollis lectus. Aliquam purus lorem, venenatis vel euismod vitae, laoreet eget purus. Sed maximus at eros et lacinia. Fusce posuere augue ut erat varius varius.",
-          self: true,
-        }}
-      />
-      <ChatContainer
-        chatInfo={{
-          message:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum velit ex, ultricies sed est et, dignissim tempor lorem. Integer maximus ac quam accumsan vestibulum. In et rhoncus nisi, eget luctus erat. Phasellus vel semper dui. Donec non ipsum sed eros ultricies elementum ac sollicitudin ante. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean euismod mi quis tempor lobortis. Aliquam non dolor turpis. Duis fermentum eros pulvinar laoreet pulvinar. Etiam nec mollis lectus. Aliquam purus lorem, venenatis vel euismod vitae, laoreet eget purus. Sed maximus at eros et lacinia. Fusce posuere augue ut erat varius varius.",
-          self: false,
-        }}
-      />
+      <>
+        {chatData.map((data) => (
+          <RecursiveFloatingContainer
+            floating="chatFloating"
+            key={data.self ? `question_${data.id}` : `answer_${data.id}`}
+          >
+            <ChatContainer chatData={data} />
+          </RecursiveFloatingContainer>
+        ))}
+      </>
     </main>
   );
 }
 
 interface ChatBubbleProps {
-  message: string;
-  self: boolean;
+  data: ChatData;
   children?: JSX.Element;
 }
 
-type ChatInfo = Omit<ChatBubbleProps, "children">;
-
-function ChatBubble({ message, self, children }: ChatBubbleProps) {
+function ChatBubble({ data, children }: ChatBubbleProps) {
   return (
-    <div className={`w-fit max-w-[70%] ${self ? "ml-auto" : "mr-auto"}`}>
+    <div className={`w-fit max-w-[70%] ${data.self ? "ml-auto" : "mr-auto"}`}>
       <div
         className={`px-7 py-[10px] min-h-[40px] rounded-[25px] flex items-center box-border text-regular break-words ${
-          self
+          data.self
             ? "rounded-tr-none bg-primary text-white text-right "
             : "rounded-tl-none bg-chatbubble"
         }`}
       >
-        {message}
+        {data.message}
       </div>
       {children}
     </div>
@@ -122,20 +125,20 @@ function ChatBubble({ message, self, children }: ChatBubbleProps) {
 }
 
 interface ChatContainerProps {
-  chatInfo: ChatInfo;
+  chatData: ChatData;
 }
 
-function ChatContainer({ chatInfo }: ChatContainerProps) {
+function ChatContainer({ chatData }: ChatContainerProps) {
   return (
     <section className={`block mb-5`}>
-      {chatInfo.self ? (
-        <ChatBubble {...chatInfo} />
+      {chatData.self ? (
+        <ChatBubble data={chatData} />
       ) : (
         <div className="flex gap-2">
           <div className="rounded-full aspect-square overflow-hidden w-icon h-fit -translate-y-2">
             <img src={AIProfile} />
           </div>
-          <ChatBubble {...chatInfo}>
+          <ChatBubble data={chatData}>
             <>
               <div className="flex justify-end gap-2 mt-2 mr-3">
                 <button className="w-icon-sm aspect-square">{Copy()}</button>
