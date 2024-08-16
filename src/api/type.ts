@@ -1,4 +1,4 @@
 export type ChatQuestion = {
   id: number;
-  message: number;
+  message: string;
 };

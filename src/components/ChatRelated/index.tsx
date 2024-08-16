@@ -4,13 +4,15 @@ import React, {
   useRef,
   useLayoutEffect,
   useEffect,
+  useCallback,
 } from "react";
 import { Send, Copy, Refresh } from "@/assets/icons";
 import AIProfile from "@/assets/icons/aiChat.png";
 import RecursiveFloatingContainer from "../RecursiveFloating";
 import { ChatData } from "./type";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { ChatStateType, ChatOnTopicState } from "@/state";
+import { SendQuestion } from "@/api/api";
 
 export function ChatInput() {
   const [input, setInput] = useState<string>("");
@@ -24,7 +26,19 @@ export function ChatInput() {
 
   const deferredTextareaStyle = useDeferredValue(textareaStyle);
 
+  const [tempResponseStore, setTempResponseStore] = useState<ChatData | null>(
+    null
+  );
+
   const textRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (tempResponseStore && chatOnTopicData)
+      setChatOnTopicData({
+        ...chatOnTopicData,
+        data: [...chatOnTopicData.data, tempResponseStore],
+      });
+  }, [tempResponseStore]);
 
   useLayoutEffect(() => {
     if (textareaStyle.height === "auto")
@@ -71,7 +85,7 @@ export function ChatInput() {
         <button
           className="w-icon absolute top-0 right-4 h-full items-center flex"
           onClick={() => {
-            if (chatOnTopicData)
+            if (chatOnTopicData) {
               setChatOnTopicData({
                 ...chatOnTopicData,
                 marker: chatOnTopicData.marker + 1,
@@ -84,6 +98,10 @@ export function ChatInput() {
                   },
                 ],
               });
+              SendQuestion({ id: chatOnTopicData.marker, message: input }).then(
+                (response) => setTempResponseStore(response)
+              );
+            }
             setInput("");
           }}
         >
@@ -95,10 +113,7 @@ export function ChatInput() {
 }
 
 export function ChatMain() {
-  // const [chatData, setChatData] = useState<ChatData[]>([]);
-  const [chatData, setChatData] = useRecoilState<ChatStateType | undefined>(
-    ChatOnTopicState
-  );
+  const chatData = useRecoilValue<ChatStateType | undefined>(ChatOnTopicState);
 
   return (
     <main className="grow overflow-scroll p-7">
@@ -186,11 +201,23 @@ function ChatSubQuestions({ question }: ChatSubQuestionsProps) {
     ChatStateType | undefined
   >(ChatOnTopicState);
 
+  const [tempResponseStore, setTempResponseStore] = useState<ChatData | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (tempResponseStore && chatOnTopicData)
+      setChatOnTopicData({
+        ...chatOnTopicData,
+        data: [...chatOnTopicData.data, tempResponseStore],
+      });
+  }, [tempResponseStore]);
+
   return (
     <button
       className="block box-border min-h-[33px] py-[3px] px-4 border-[1px] border-primary text-center text-primary rounded-[18px] hover:bg-primary hover:text-white transition-colors"
       onClick={() => {
-        if (chatOnTopicData)
+        if (chatOnTopicData) {
           setChatOnTopicData({
             ...chatOnTopicData,
             marker: chatOnTopicData.marker + 1,
@@ -203,6 +230,10 @@ function ChatSubQuestions({ question }: ChatSubQuestionsProps) {
               },
             ],
           });
+          SendQuestion({ id: chatOnTopicData.marker, message: question }).then(
+            (response) => setTempResponseStore(response)
+          );
+        }
       }}
     >
       {question}
