@@ -1,11 +1,42 @@
 import { ArrowBack, Edit } from "@/assets/icons";
 import { ChatInput, ChatMain } from "@/components/ChatRelated";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  ChatTopicState,
+  ChatOnTopicState,
+  ChatTopicStateType,
+  ChatStateType,
+} from "@/state";
+import { useEffect, useLayoutEffect } from "react";
 
 interface ChatProps {
   title: string;
 }
 
 export default function Chat({ title }: ChatProps) {
+  const [topic, setTopic] = useRecoilState<ChatTopicStateType>(ChatTopicState);
+
+  const [chatOnTopicData, setChatOnTopicData] = useRecoilState<
+    ChatStateType | undefined
+  >(ChatOnTopicState);
+
+  useEffect(() => {
+    setTopic(title);
+  }, []);
+
+  useEffect(() => {
+    if (topic && !chatOnTopicData)
+      setChatOnTopicData({
+        name: title,
+        data: [{ id: 0, message: "adadadad", self: false }],
+        marker: 0,
+      });
+  }, [topic]);
+
+  useEffect(() => {
+    console.log(chatOnTopicData);
+  }, [chatOnTopicData]);
+
   return (
     <div className="flex flex-col h-screen">
       <header className=" flex flex-row py-3 px-5 items-center shadow-chat-header">

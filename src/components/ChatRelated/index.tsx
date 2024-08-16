@@ -9,6 +9,8 @@ import { Send, Copy, Refresh } from "@/assets/icons";
 import AIProfile from "@/assets/icons/aiChat.png";
 import RecursiveFloatingContainer from "../RecursiveFloating";
 import { ChatData } from "./type";
+import { useRecoilState } from "recoil";
+import { ChatStateType, ChatOnTopicState } from "@/state";
 
 export function ChatInput() {
   const [input, setInput] = useState<string>("");
@@ -70,21 +72,15 @@ export function ChatInput() {
 }
 
 export function ChatMain() {
-  const [chatData, setChatData] = useState<ChatData[]>([]);
-  const [id, setId] = useState(0);
-
-  // useEffect(() => {
-  //   setInterval(() => setId((id) => id + 1), 1000);
-  // }, []);
-
-  // useEffect(() => {
-  //   setChatData([...chatData, { id, message: "adadad", self: false }]);
-  // }, [id]);
+  // const [chatData, setChatData] = useState<ChatData[]>([]);
+  const [chatData, setChatData] = useRecoilState<ChatStateType | undefined>(
+    ChatOnTopicState
+  );
 
   return (
     <main className="grow overflow-scroll p-7">
       <>
-        {chatData.map((data) => (
+        {chatData?.data.map((data) => (
           <RecursiveFloatingContainer
             floating="chatFloating"
             key={data.self ? `question_${data.id}` : `answer_${data.id}`}
