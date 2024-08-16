@@ -1,6 +1,7 @@
 import { useRef, useEffect, useLayoutEffect, useCallback } from "react";
 
-interface RecursiveFloatingContainerProps {
+interface RecursiveFloatingContainerProps
+  extends React.ComponentPropsWithoutRef<"div"> {
   children: JSX.Element;
   floating: string;
 }
@@ -8,6 +9,7 @@ interface RecursiveFloatingContainerProps {
 export default function RecursiveFloatingContainer({
   children,
   floating,
+  ...props
 }: RecursiveFloatingContainerProps) {
   const container = useRef<HTMLDivElement>(null);
 
@@ -39,5 +41,9 @@ export default function RecursiveFloatingContainer({
     container.current?.firstElementChild?.classList.add(floating);
   }, [floating]);
 
-  return <div ref={container}>{children}</div>;
+  return (
+    <div {...props} ref={container}>
+      {children}
+    </div>
+  );
 }
