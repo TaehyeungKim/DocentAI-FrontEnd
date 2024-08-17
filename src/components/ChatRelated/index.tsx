@@ -4,52 +4,30 @@ import React, {
   useRef,
   useLayoutEffect,
   useEffect,
-  useCallback,
 } from "react";
 import { Send, Copy, Refresh } from "@/assets/icons";
 import AIProfile from "@/assets/icons/aiChat.png";
 import RecursiveFloatingContainer from "../RecursiveFloating";
-import { ChatData, ChatQuestion, ChatAnswer, ChatType } from "./type";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { ChatQuestion, ChatAnswer } from "./type";
+import { useRecoilValue } from "recoil";
 import { ChatStateType, ChatOnTopicState } from "@/state";
-import { SendQuestion } from "@/api/api";
+import { Submitter, SubmitWrapper } from "./wrapper";
 
-export function ChatInput() {
+export interface ChatSubmitComponentProps {
+  submit: Submitter;
+}
+
+interface ChatInputFormProps extends ChatSubmitComponentProps {}
+
+function ChatInputForm({ submit }: ChatInputFormProps) {
   const [input, setInput] = useState<string>("");
   const [textareaStyle, setTextAreaStyle] = useState<React.CSSProperties>({
     maxHeight: "10vh",
   });
 
-  const [chatOnTopicData, setChatOnTopicData] = useRecoilState<
-    ChatStateType | undefined
-  >(ChatOnTopicState);
-
   const deferredTextareaStyle = useDeferredValue(textareaStyle);
 
-  const [tempResponseStore, setTempResponseStore] = useState<ChatAnswer | null>(
-    null
-  );
-
   const textRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    if (tempResponseStore && chatOnTopicData) {
-      const targetData = chatOnTopicData.data.find(
-        (data) => data.id === tempResponseStore.id
-      ) as ChatData;
-
-      const newData = { ...targetData };
-
-      newData.answer = tempResponseStore;
-      setChatOnTopicData({
-        ...chatOnTopicData,
-        data: [
-          ...chatOnTopicData.data.filter((d) => d.id !== newData.id),
-          newData,
-        ].sort((a, b) => a.id - b.id),
-      });
-    }
-  }, [tempResponseStore]);
 
   useLayoutEffect(() => {
     if (textareaStyle.height === "auto")
@@ -97,33 +75,7 @@ export function ChatInput() {
           className="w-icon absolute top-0 right-4 h-full items-center flex"
           onClick={() => {
             if (!input) return;
-            if (chatOnTopicData) {
-              setChatOnTopicData({
-                ...chatOnTopicData,
-                marker: chatOnTopicData.marker + 1,
-                data: [
-                  ...chatOnTopicData.data,
-                  {
-                    id: chatOnTopicData.marker + 1,
-                    question: {
-                      id: chatOnTopicData.marker + 1,
-                      type: "question",
-                      question: input,
-                    },
-                    answer: {
-                      id: chatOnTopicData.marker + 1,
-                      type: "answer",
-                      answer: "",
-                      sub: [],
-                    },
-                  },
-                ],
-              });
-              SendQuestion({
-                id: chatOnTopicData.marker + 1,
-                message: input,
-              }).then((response) => setTempResponseStore(response));
-            }
+            submit(input);
             setInput("");
           }}
         >
@@ -220,7 +172,7 @@ function ChatAnswerContainer({ answer }: ChatAnswerContainerProps) {
             >
               <>
                 {answer.sub?.map((q) => (
-                  <ChatSubQuestions key={q} question={q} />
+                  <ChatSubQuestion key={q} question={q} />
                 ))}
               </>
             </RecursiveFloatingContainer>
@@ -231,72 +183,41 @@ function ChatAnswerContainer({ answer }: ChatAnswerContainerProps) {
   );
 }
 
-interface ChatSubQuestionsProps {
+export interface ChatSubQuestionFormProps extends ChatSubmitComponentProps {
   question: string;
 }
 
-function ChatSubQuestions({ question }: ChatSubQuestionsProps) {
-  const [chatOnTopicData, setChatOnTopicData] = useRecoilState<
-    ChatStateType | undefined
-  >(ChatOnTopicState);
-
-  const [tempResponseStore, setTempResponseStore] = useState<ChatAnswer | null>(
-    null
-  );
-
-  useEffect(() => {
-    if (tempResponseStore && chatOnTopicData) {
-      const targetData = chatOnTopicData.data.find(
-        (data) => data.id === tempResponseStore.id
-      ) as ChatData;
-
-      const newData = { ...targetData };
-
-      newData.answer = tempResponseStore;
-      setChatOnTopicData({
-        ...chatOnTopicData,
-        data: [
-          ...chatOnTopicData.data.filter((d) => d.id !== newData.id),
-          newData,
-        ].sort((a, b) => a.id - b.id),
-      });
-    }
-  }, [tempResponseStore]);
-
+function ChatSubQuestionForm({ question, submit }: ChatSubQuestionFormProps) {
   return (
     <button
       className="block box-border min-h-[33px] py-[3px] px-4 border-[1px] border-primary text-center text-primary rounded-[18px] hover:bg-primary hover:text-white transition-colors"
       onClick={() => {
-        if (chatOnTopicData) {
-          setChatOnTopicData({
-            ...chatOnTopicData,
-            marker: chatOnTopicData.marker + 1,
-            data: [
-              ...chatOnTopicData.data,
-              {
-                id: chatOnTopicData.marker + 1,
-                question: {
-                  id: chatOnTopicData.marker + 1,
-                  type: "question",
-                  question,
-                },
-                answer: {
-                  id: chatOnTopicData.marker + 1,
-                  type: "answer",
-                  answer: "",
-                  sub: [],
-                },
-              },
-            ],
-          });
-          SendQuestion({
-            id: chatOnTopicData.marker + 1,
-            message: question,
-          }).then((response) => setTempResponseStore(response));
-        }
+        submit(question);
       }}
     >
       {question}
     </button>
+  );
+}
+
+interface ChatSubQuestionProps {
+  question: string;
+}
+
+function ChatSubQuestion({ question }: ChatSubQuestionProps) {
+  return (
+    <SubmitWrapper<ChatSubQuestionFormProps>
+      Form={ChatSubQuestionForm}
+      props={{ question, submit: (input: string) => {} }}
+    ></SubmitWrapper>
+  );
+}
+
+export function ChatInput() {
+  return (
+    <SubmitWrapper<ChatInputFormProps>
+      Form={ChatInputForm}
+      props={{ submit: (input: string) => {} }}
+    ></SubmitWrapper>
   );
 }
