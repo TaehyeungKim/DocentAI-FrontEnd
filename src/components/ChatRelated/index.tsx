@@ -116,38 +116,41 @@ interface ChatBubbleProps {
 }
 
 function ChatBubble({ data, children }: ChatBubbleProps) {
-  if (data.type === "answer" && data.answer === "")
-    return (
-      <div className={`max-w-[70%] w-20 mr-auto`}>
-        <div
-          className={`px-7 py-[10px] min-h-[40px] rounded-[25px] flex items-center box-border text-regular break-words rounded-tl-none bg-chatbubble`}
+  switch (data.type) {
+    case "answer":
+      if (data.answer === "")
+        return (
+          <div className={`max-w-[70%] w-20 mr-auto`}>
+            <div
+              className={`bubbleLayoutTemplate rounded-tl-none bg-chatbubble`}
+            >
+              <AnswerPending />
+            </div>
+          </div>
+        );
+      return (
+        <RecursiveFloatingContainer
+          floating="chatFloating"
+          className={`w-fit max-w-[70%] mr-auto`}
         >
-          <AnswerPending />
+          <>
+            <div className={`bubbleLayoutTemplate bubbleAnswerStyle`}>
+              {data.answer}
+            </div>
+            {children}
+          </>
+        </RecursiveFloatingContainer>
+      );
+    default:
+      return (
+        <div className={`w-fit max-w-[70%] ml-auto`}>
+          <div className={`bubbleLayoutTemplate bubbleQuestionStyle`}>
+            {data.question}
+          </div>
+          {children}
         </div>
-      </div>
-    );
-
-  return (
-    <RecursiveFloatingContainer
-      floating="chatFloating"
-      className={`w-fit max-w-[70%] ${
-        data.type === "question" ? "ml-auto" : "mr-auto"
-      }`}
-    >
-      <>
-        <div
-          className={`px-7 py-[10px] min-h-[40px] rounded-[25px] flex items-center box-border text-regular break-words ${
-            data.type === "question"
-              ? "rounded-tr-none bg-primary text-white text-right "
-              : "rounded-tl-none bg-chatbubble"
-          }`}
-        >
-          {data.type === "question" ? data.question : data.answer}
-        </div>
-        {children}
-      </>
-    </RecursiveFloatingContainer>
-  );
+      );
+  }
 }
 
 interface ChatQuestionContainerProps {
