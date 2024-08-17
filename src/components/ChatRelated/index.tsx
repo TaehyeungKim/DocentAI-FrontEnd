@@ -116,33 +116,37 @@ interface ChatBubbleProps {
 }
 
 function ChatBubble({ data, children }: ChatBubbleProps) {
-  useEffect(() => {
-    if (data.type === "answer" && !data.answer) {
-    }
-  }, []);
+  if (data.type === "answer" && data.answer === "")
+    return (
+      <div className={`max-w-[70%] w-20 mr-auto`}>
+        <div
+          className={`px-7 py-[10px] min-h-[40px] rounded-[25px] flex items-center box-border text-regular break-words rounded-tl-none bg-chatbubble`}
+        >
+          <AnswerPending />
+        </div>
+      </div>
+    );
 
   return (
-    <div
+    <RecursiveFloatingContainer
+      floating="chatFloating"
       className={`w-fit max-w-[70%] ${
         data.type === "question" ? "ml-auto" : "mr-auto"
-      } ${data.type === "answer" && data.answer === "" ? "!w-20" : ""}`}
+      }`}
     >
-      <div
-        className={`px-7 py-[10px] min-h-[40px] rounded-[25px] flex items-center box-border text-regular break-words ${
-          data.type === "question"
-            ? "rounded-tr-none bg-primary text-white text-right "
-            : "rounded-tl-none bg-chatbubble"
-        }`}
-      >
-        {data.type === "question" ? (
-          data.question
-        ) : (
-          // data.answer
-          <AnswerPending />
-        )}
-      </div>
-      {children}
-    </div>
+      <>
+        <div
+          className={`px-7 py-[10px] min-h-[40px] rounded-[25px] flex items-center box-border text-regular break-words ${
+            data.type === "question"
+              ? "rounded-tr-none bg-primary text-white text-right "
+              : "rounded-tl-none bg-chatbubble"
+          }`}
+        >
+          {data.type === "question" ? data.question : data.answer}
+        </div>
+        {children}
+      </>
+    </RecursiveFloatingContainer>
   );
 }
 
@@ -152,7 +156,7 @@ interface ChatQuestionContainerProps {
 
 function ChatQuestionContainer({ question }: ChatQuestionContainerProps) {
   return (
-    <section className={`block mb-5`}>
+    <section className={`block mb-7`}>
       <ChatBubble data={question} />
     </section>
   );
@@ -164,7 +168,7 @@ interface ChatAnswerContainerProps {
 
 function ChatAnswerContainer({ answer }: ChatAnswerContainerProps) {
   return (
-    <section className={`block mb-5`}>
+    <section className={`block mb-7`}>
       <div className="flex gap-2">
         <div className="rounded-full aspect-square overflow-hidden w-icon h-fit -translate-y-2">
           <img src={AIProfile} />
