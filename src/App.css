@@ -81,3 +81,15 @@
   animation-iteration-count: infinite;
   animation-delay: 0.2s;
 }
+
+.bubbleLayoutTemplate {
+  @apply px-7 py-[10px] min-h-[40px] rounded-[25px] flex items-center box-border text-regular break-words;
+}
+
+.bubbleQuestionStyle {
+  @apply rounded-tr-none bg-primary text-white text-right;
+}
+
+.bubbleAnswerStyle {
+  @apply rounded-tl-none bg-chatbubble;
+}
