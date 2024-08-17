@@ -10,7 +10,7 @@ export const SendQuestion = (data: ChatQuestion): Promise<ChatAnswer> => {
         resolve({
           id: data.id,
           type: "answer",
-          answer: "네. 이 작품은 ~~~하며 ~~~한 것이 특징입니다.",
+          answer: "",
           sub: [
             "작가에 대해서 더 설명해줘",
             "이 작가의 다른 작품들도 그래?",

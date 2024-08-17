@@ -116,11 +116,16 @@ interface ChatBubbleProps {
 }
 
 function ChatBubble({ data, children }: ChatBubbleProps) {
+  useEffect(() => {
+    if (data.type === "answer" && !data.answer) {
+    }
+  }, []);
+
   return (
     <div
       className={`w-fit max-w-[70%] ${
         data.type === "question" ? "ml-auto" : "mr-auto"
-      }`}
+      } ${data.type === "answer" && data.answer === "" ? "!w-20" : ""}`}
     >
       <div
         className={`px-7 py-[10px] min-h-[40px] rounded-[25px] flex items-center box-border text-regular break-words ${
@@ -129,7 +134,12 @@ function ChatBubble({ data, children }: ChatBubbleProps) {
             : "rounded-tl-none bg-chatbubble"
         }`}
       >
-        {data.type === "question" ? data.question : data.answer}
+        {data.type === "question" ? (
+          data.question
+        ) : (
+          // data.answer
+          <AnswerPending />
+        )}
       </div>
       {children}
     </div>
@@ -180,6 +190,22 @@ function ChatAnswerContainer({ answer }: ChatAnswerContainerProps) {
         </ChatBubble>
       </div>
     </section>
+  );
+}
+
+function AnswerPending() {
+  return (
+    <RecursiveFloatingContainer
+      floating="chatPendingFloating"
+      className="inline-flex flex-row w-full max-w-[5.4rem] gap-[0.2rem]"
+      initial="inherit"
+    >
+      <>
+        <div className="rounded-full bg-black aspect-square grow "></div>
+        <div className="rounded-full bg-black aspect-square grow "></div>
+        <div className="rounded-full bg-black aspect-square grow "></div>
+      </>
+    </RecursiveFloatingContainer>
   );
 }
 

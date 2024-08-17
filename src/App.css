@@ -65,3 +65,19 @@
   animation-fill-mode: backwards;
   animation-delay: 0.1s;
 }
+
+@keyframes chatPendingFloating {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-70%);
+  }
+}
+
+.chatPendingFloating {
+  animation: chatPendingFloating 0.7s ease-in-out;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+  animation-delay: 0.2s;
+}
