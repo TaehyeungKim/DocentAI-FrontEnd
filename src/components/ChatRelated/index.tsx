@@ -9,7 +9,7 @@ import React, {
 import { Send, Copy, Refresh } from "@/assets/icons";
 import AIProfile from "@/assets/icons/aiChat.png";
 import RecursiveFloatingContainer from "../RecursiveFloating";
-import { ChatData } from "./type";
+import { ChatData, ChatQuestion, ChatAnswer, ChatType } from "./type";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { ChatStateType, ChatOnTopicState } from "@/state";
 import { SendQuestion } from "@/api/api";
@@ -26,7 +26,7 @@ export function ChatInput() {
 
   const deferredTextareaStyle = useDeferredValue(textareaStyle);
 
-  const [tempResponseStore, setTempResponseStore] = useState<ChatData | null>(
+  const [tempResponseStore, setTempResponseStore] = useState<ChatAnswer | null>(
     null
   );
 
@@ -34,11 +34,20 @@ export function ChatInput() {
 
   useEffect(() => {
     if (tempResponseStore && chatOnTopicData) {
+      const targetData = chatOnTopicData.data.find(
+        (data) => data.id === tempResponseStore.id
+      ) as ChatData;
+
+      const newData = { ...targetData };
+
+      newData.answer = tempResponseStore;
       setChatOnTopicData({
         ...chatOnTopicData,
-        data: [...chatOnTopicData.data, tempResponseStore],
+        data: [
+          ...chatOnTopicData.data.filter((d) => d.id !== newData.id),
+          newData,
+        ].sort((a, b) => a.id - b.id),
       });
-      setTempResponseStore(null);
     }
   }, [tempResponseStore]);
 
@@ -96,8 +105,17 @@ export function ChatInput() {
                   ...chatOnTopicData.data,
                   {
                     id: chatOnTopicData.marker + 1,
-                    message: input,
-                    self: true,
+                    question: {
+                      id: chatOnTopicData.marker + 1,
+                      type: "question",
+                      question: input,
+                    },
+                    answer: {
+                      id: chatOnTopicData.marker + 1,
+                      type: "answer",
+                      answer: "",
+                      sub: [],
+                    },
                   },
                 ],
               });
@@ -125,9 +143,14 @@ export function ChatMain() {
         {chatData?.data.map((data) => (
           <RecursiveFloatingContainer
             floating="chatFloating"
-            key={data.self ? `question_${data.id}` : `answer_${data.id}`}
+            key={`chat_${data.id}`}
           >
-            <ChatContainer chatData={data} />
+            <>
+              {data.question && (
+                <ChatQuestionContainer question={data.question} />
+              )}
+              {data.answer && <ChatAnswerContainer answer={data.answer} />}
+            </>
           </RecursiveFloatingContainer>
         ))}
       </>
@@ -136,62 +159,74 @@ export function ChatMain() {
 }
 
 interface ChatBubbleProps {
-  data: ChatData;
+  data: ChatQuestion | ChatAnswer;
   children?: JSX.Element;
 }
 
 function ChatBubble({ data, children }: ChatBubbleProps) {
   return (
-    <div className={`w-fit max-w-[70%] ${data.self ? "ml-auto" : "mr-auto"}`}>
+    <div
+      className={`w-fit max-w-[70%] ${
+        data.type === "question" ? "ml-auto" : "mr-auto"
+      }`}
+    >
       <div
         className={`px-7 py-[10px] min-h-[40px] rounded-[25px] flex items-center box-border text-regular break-words ${
-          data.self
+          data.type === "question"
             ? "rounded-tr-none bg-primary text-white text-right "
             : "rounded-tl-none bg-chatbubble"
         }`}
       >
-        {data.message}
+        {data.type === "question" ? data.question : data.answer}
       </div>
       {children}
     </div>
   );
 }
 
-interface ChatContainerProps {
-  chatData: ChatData;
+interface ChatQuestionContainerProps {
+  question: ChatQuestion;
 }
 
-function ChatContainer({ chatData }: ChatContainerProps) {
+function ChatQuestionContainer({ question }: ChatQuestionContainerProps) {
   return (
     <section className={`block mb-5`}>
-      {chatData.self ? (
-        <ChatBubble data={chatData} />
-      ) : (
-        <div className="flex gap-2">
-          <div className="rounded-full aspect-square overflow-hidden w-icon h-fit -translate-y-2">
-            <img src={AIProfile} />
-          </div>
-          <ChatBubble data={chatData}>
-            <>
-              <div className="flex justify-end gap-2 mt-2 mr-3">
-                <button className="w-icon-sm aspect-square">{Copy()}</button>
-                <button className="w-icon-sm aspect-square">{Refresh()}</button>
-              </div>
+      <ChatBubble data={question} />
+    </section>
+  );
+}
 
-              <RecursiveFloatingContainer
-                floating="subQuestionFloating"
-                className="flex flex-wrap gap-2 mt-4"
-              >
-                <>
-                  {chatData.sub?.map((q) => (
-                    <ChatSubQuestions key={q} question={q} />
-                  ))}
-                </>
-              </RecursiveFloatingContainer>
-            </>
-          </ChatBubble>
+interface ChatAnswerContainerProps {
+  answer: ChatAnswer;
+}
+
+function ChatAnswerContainer({ answer }: ChatAnswerContainerProps) {
+  return (
+    <section className={`block mb-5`}>
+      <div className="flex gap-2">
+        <div className="rounded-full aspect-square overflow-hidden w-icon h-fit -translate-y-2">
+          <img src={AIProfile} />
         </div>
-      )}
+        <ChatBubble data={answer}>
+          <>
+            <div className="flex justify-end gap-2 mt-2 mr-3">
+              <button className="w-icon-sm aspect-square">{Copy()}</button>
+              <button className="w-icon-sm aspect-square">{Refresh()}</button>
+            </div>
+
+            <RecursiveFloatingContainer
+              floating="subQuestionFloating"
+              className="flex flex-wrap gap-2 mt-4"
+            >
+              <>
+                {answer.sub?.map((q) => (
+                  <ChatSubQuestions key={q} question={q} />
+                ))}
+              </>
+            </RecursiveFloatingContainer>
+          </>
+        </ChatBubble>
+      </div>
     </section>
   );
 }
@@ -205,16 +240,27 @@ function ChatSubQuestions({ question }: ChatSubQuestionsProps) {
     ChatStateType | undefined
   >(ChatOnTopicState);
 
-  const [tempResponseStore, setTempResponseStore] = useState<ChatData | null>(
+  const [tempResponseStore, setTempResponseStore] = useState<ChatAnswer | null>(
     null
   );
 
   useEffect(() => {
-    if (tempResponseStore && chatOnTopicData)
+    if (tempResponseStore && chatOnTopicData) {
+      const targetData = chatOnTopicData.data.find(
+        (data) => data.id === tempResponseStore.id
+      ) as ChatData;
+
+      const newData = { ...targetData };
+
+      newData.answer = tempResponseStore;
       setChatOnTopicData({
         ...chatOnTopicData,
-        data: [...chatOnTopicData.data, tempResponseStore],
+        data: [
+          ...chatOnTopicData.data.filter((d) => d.id !== newData.id),
+          newData,
+        ].sort((a, b) => a.id - b.id),
       });
+    }
   }, [tempResponseStore]);
 
   return (
@@ -229,8 +275,17 @@ function ChatSubQuestions({ question }: ChatSubQuestionsProps) {
               ...chatOnTopicData.data,
               {
                 id: chatOnTopicData.marker + 1,
-                message: question,
-                self: true,
+                question: {
+                  id: chatOnTopicData.marker + 1,
+                  type: "question",
+                  question,
+                },
+                answer: {
+                  id: chatOnTopicData.marker + 1,
+                  type: "answer",
+                  answer: "",
+                  sub: [],
+                },
               },
             ],
           });

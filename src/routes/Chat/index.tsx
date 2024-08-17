@@ -1,6 +1,6 @@
 import { ArrowBack, Edit } from "@/assets/icons";
 import { ChatInput, ChatMain } from "@/components/ChatRelated";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import {
   ChatTopicState,
   ChatOnTopicState,
@@ -37,15 +37,18 @@ export default function Chat({ title }: ChatProps) {
           data: [
             {
               id: 0,
-              message: `${title}에 오신 것을 환영합니다.`,
-              self: false,
-              sub: [
-                "작품 설명해줘",
-                "작가 설명해줘",
-                "비슷한 작품 추천해줘",
-                "감상 써줘",
-                "너는 어떤 기능들이 있어?",
-              ],
+              answer: {
+                id: 0,
+                type: "answer",
+                answer: `${title}에 오신 것을 환영합니다.`,
+                sub: [
+                  "작품 설명해줘",
+                  "작가 설명해줘",
+                  "비슷한 작품 추천해줘",
+                  "감상 써줘",
+                  "너는 어떤 기능들이 있어?",
+                ],
+              },
             },
           ],
           marker: 0,
