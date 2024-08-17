@@ -1,8 +1,21 @@
 export type ChatData = {
   id: number;
-  message: string;
-  self: boolean;
-  //if this chat is answer ('self' is false)
-  for?: number;
+  question?: ChatQuestion;
+  answer?: ChatAnswer;
+};
+
+export type ChatType = "question" | "answer";
+
+type ChatNode<T extends ChatType> = {
+  type: T;
+  id: number;
+};
+
+export type ChatQuestion = ChatNode<"question"> & {
+  question: string;
+};
+
+export type ChatAnswer = ChatNode<"answer"> & {
+  answer: string;
   sub?: string[];
 };

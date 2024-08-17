@@ -1,7 +1,7 @@
 import { ChatQuestion } from "./type";
-import { ChatData } from "@/components/ChatRelated/type";
+import { ChatAnswer } from "@/components/ChatRelated/type";
 
-export const SendQuestion = (data: ChatQuestion): Promise<ChatData> => {
+export const SendQuestion = (data: ChatQuestion): Promise<ChatAnswer> => {
   //before connecting api
   console.log(data);
   return new Promise((resolve, reject) => {
@@ -9,8 +9,9 @@ export const SendQuestion = (data: ChatQuestion): Promise<ChatData> => {
       () =>
         resolve({
           id: data.id,
-          message: "네. 이 작품은 ~~~하며 ~~~한 것이 특징입니다.",
-          self: false,
+          type: "answer",
+          answer: "네 이 작품은 ~~~~하고요 ~~~합니다.",
+
           sub: [
             "작가에 대해서 더 설명해줘",
             "이 작가의 다른 작품들도 그래?",

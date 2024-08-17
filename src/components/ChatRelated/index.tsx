@@ -4,43 +4,30 @@ import React, {
   useRef,
   useLayoutEffect,
   useEffect,
-  useCallback,
 } from "react";
 import { Send, Copy, Refresh } from "@/assets/icons";
 import AIProfile from "@/assets/icons/aiChat.png";
 import RecursiveFloatingContainer from "../RecursiveFloating";
-import { ChatData } from "./type";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { ChatQuestion, ChatAnswer } from "./type";
+import { useRecoilValue } from "recoil";
 import { ChatStateType, ChatOnTopicState } from "@/state";
-import { SendQuestion } from "@/api/api";
+import { Submitter, SubmitWrapper } from "./wrapper";
 
-export function ChatInput() {
+export interface ChatSubmitComponentProps {
+  submit: Submitter;
+}
+
+interface ChatInputFormProps extends ChatSubmitComponentProps {}
+
+function ChatInputForm({ submit }: ChatInputFormProps) {
   const [input, setInput] = useState<string>("");
   const [textareaStyle, setTextAreaStyle] = useState<React.CSSProperties>({
     maxHeight: "10vh",
   });
 
-  const [chatOnTopicData, setChatOnTopicData] = useRecoilState<
-    ChatStateType | undefined
-  >(ChatOnTopicState);
-
   const deferredTextareaStyle = useDeferredValue(textareaStyle);
 
-  const [tempResponseStore, setTempResponseStore] = useState<ChatData | null>(
-    null
-  );
-
   const textRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    if (tempResponseStore && chatOnTopicData) {
-      setChatOnTopicData({
-        ...chatOnTopicData,
-        data: [...chatOnTopicData.data, tempResponseStore],
-      });
-      setTempResponseStore(null);
-    }
-  }, [tempResponseStore]);
 
   useLayoutEffect(() => {
     if (textareaStyle.height === "auto")
@@ -88,24 +75,7 @@ export function ChatInput() {
           className="w-icon absolute top-0 right-4 h-full items-center flex"
           onClick={() => {
             if (!input) return;
-            if (chatOnTopicData) {
-              setChatOnTopicData({
-                ...chatOnTopicData,
-                marker: chatOnTopicData.marker + 1,
-                data: [
-                  ...chatOnTopicData.data,
-                  {
-                    id: chatOnTopicData.marker + 1,
-                    message: input,
-                    self: true,
-                  },
-                ],
-              });
-              SendQuestion({
-                id: chatOnTopicData.marker + 1,
-                message: input,
-              }).then((response) => setTempResponseStore(response));
-            }
+            submit(input);
             setInput("");
           }}
         >
@@ -125,9 +95,14 @@ export function ChatMain() {
         {chatData?.data.map((data) => (
           <RecursiveFloatingContainer
             floating="chatFloating"
-            key={data.self ? `question_${data.id}` : `answer_${data.id}`}
+            key={`chat_${data.id}`}
           >
-            <ChatContainer chatData={data} />
+            <>
+              {data.question && (
+                <ChatQuestionContainer question={data.question} />
+              )}
+              {data.answer && <ChatAnswerContainer answer={data.answer} />}
+            </>
           </RecursiveFloatingContainer>
         ))}
       </>
@@ -136,112 +111,146 @@ export function ChatMain() {
 }
 
 interface ChatBubbleProps {
-  data: ChatData;
+  data: ChatQuestion | ChatAnswer;
   children?: JSX.Element;
 }
 
 function ChatBubble({ data, children }: ChatBubbleProps) {
-  return (
-    <div className={`w-fit max-w-[70%] ${data.self ? "ml-auto" : "mr-auto"}`}>
-      <div
-        className={`px-7 py-[10px] min-h-[40px] rounded-[25px] flex items-center box-border text-regular break-words ${
-          data.self
-            ? "rounded-tr-none bg-primary text-white text-right "
-            : "rounded-tl-none bg-chatbubble"
-        }`}
-      >
-        {data.message}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-interface ChatContainerProps {
-  chatData: ChatData;
-}
-
-function ChatContainer({ chatData }: ChatContainerProps) {
-  return (
-    <section className={`block mb-5`}>
-      {chatData.self ? (
-        <ChatBubble data={chatData} />
-      ) : (
-        <div className="flex gap-2">
-          <div className="rounded-full aspect-square overflow-hidden w-icon h-fit -translate-y-2">
-            <img src={AIProfile} />
+  switch (data.type) {
+    case "answer":
+      if (data.answer === "")
+        return (
+          <div className={`max-w-[70%] w-20 mr-auto`}>
+            <div
+              className={`bubbleLayoutTemplate rounded-tl-none bg-chatbubble`}
+            >
+              <AnswerPending />
+            </div>
           </div>
-          <ChatBubble data={chatData}>
-            <>
-              <div className="flex justify-end gap-2 mt-2 mr-3">
-                <button className="w-icon-sm aspect-square">{Copy()}</button>
-                <button className="w-icon-sm aspect-square">{Refresh()}</button>
-              </div>
-
-              <RecursiveFloatingContainer
-                floating="subQuestionFloating"
-                className="flex flex-wrap gap-2 mt-4"
-              >
-                <>
-                  {chatData.sub?.map((q) => (
-                    <ChatSubQuestions key={q} question={q} />
-                  ))}
-                </>
-              </RecursiveFloatingContainer>
-            </>
-          </ChatBubble>
+        );
+      return (
+        <RecursiveFloatingContainer
+          floating="chatFloating"
+          className={`w-fit max-w-[70%] mr-auto`}
+        >
+          <>
+            <div className={`bubbleLayoutTemplate bubbleAnswerStyle`}>
+              {data.answer}
+            </div>
+            {children}
+          </>
+        </RecursiveFloatingContainer>
+      );
+    default:
+      return (
+        <div className={`w-fit max-w-[70%] ml-auto`}>
+          <div className={`bubbleLayoutTemplate bubbleQuestionStyle`}>
+            {data.question}
+          </div>
+          {children}
         </div>
-      )}
+      );
+  }
+}
+
+interface ChatQuestionContainerProps {
+  question: ChatQuestion;
+}
+
+function ChatQuestionContainer({ question }: ChatQuestionContainerProps) {
+  return (
+    <section className={`block mb-7`}>
+      <ChatBubble data={question} />
     </section>
   );
 }
 
-interface ChatSubQuestionsProps {
+interface ChatAnswerContainerProps {
+  answer: ChatAnswer;
+}
+
+function ChatAnswerContainer({ answer }: ChatAnswerContainerProps) {
+  return (
+    <section className={`block mb-7`}>
+      <div className="flex gap-2">
+        <div className="rounded-full aspect-square overflow-hidden w-icon h-fit -translate-y-2">
+          <img src={AIProfile} />
+        </div>
+        <ChatBubble data={answer}>
+          <>
+            <div className="flex justify-end gap-2 mt-2 mr-3">
+              <button className="w-icon-sm aspect-square">{Copy()}</button>
+              <button className="w-icon-sm aspect-square">{Refresh()}</button>
+            </div>
+
+            <RecursiveFloatingContainer
+              floating="subQuestionFloating"
+              className="flex flex-wrap gap-2 mt-4"
+            >
+              <>
+                {answer.sub?.map((q) => (
+                  <ChatSubQuestion key={q} question={q} />
+                ))}
+              </>
+            </RecursiveFloatingContainer>
+          </>
+        </ChatBubble>
+      </div>
+    </section>
+  );
+}
+
+function AnswerPending() {
+  return (
+    <RecursiveFloatingContainer
+      floating="chatPendingFloating"
+      className="inline-flex flex-row w-full max-w-[5.4rem] gap-[0.2rem]"
+      initial="inherit"
+    >
+      <>
+        <div className="rounded-full bg-black aspect-square grow "></div>
+        <div className="rounded-full bg-black aspect-square grow "></div>
+        <div className="rounded-full bg-black aspect-square grow "></div>
+      </>
+    </RecursiveFloatingContainer>
+  );
+}
+
+export interface ChatSubQuestionFormProps extends ChatSubmitComponentProps {
   question: string;
 }
 
-function ChatSubQuestions({ question }: ChatSubQuestionsProps) {
-  const [chatOnTopicData, setChatOnTopicData] = useRecoilState<
-    ChatStateType | undefined
-  >(ChatOnTopicState);
-
-  const [tempResponseStore, setTempResponseStore] = useState<ChatData | null>(
-    null
-  );
-
-  useEffect(() => {
-    if (tempResponseStore && chatOnTopicData)
-      setChatOnTopicData({
-        ...chatOnTopicData,
-        data: [...chatOnTopicData.data, tempResponseStore],
-      });
-  }, [tempResponseStore]);
-
+function ChatSubQuestionForm({ question, submit }: ChatSubQuestionFormProps) {
   return (
     <button
       className="block box-border min-h-[33px] py-[3px] px-4 border-[1px] border-primary text-center text-primary rounded-[18px] hover:bg-primary hover:text-white transition-colors"
       onClick={() => {
-        if (chatOnTopicData) {
-          setChatOnTopicData({
-            ...chatOnTopicData,
-            marker: chatOnTopicData.marker + 1,
-            data: [
-              ...chatOnTopicData.data,
-              {
-                id: chatOnTopicData.marker + 1,
-                message: question,
-                self: true,
-              },
-            ],
-          });
-          SendQuestion({
-            id: chatOnTopicData.marker + 1,
-            message: question,
-          }).then((response) => setTempResponseStore(response));
-        }
+        submit(question);
       }}
     >
       {question}
     </button>
+  );
+}
+
+interface ChatSubQuestionProps {
+  question: string;
+}
+
+function ChatSubQuestion({ question }: ChatSubQuestionProps) {
+  return (
+    <SubmitWrapper<ChatSubQuestionFormProps>
+      Form={ChatSubQuestionForm}
+      props={{ question, submit: (input: string) => {} }}
+    ></SubmitWrapper>
+  );
+}
+
+export function ChatInput() {
+  return (
+    <SubmitWrapper<ChatInputFormProps>
+      Form={ChatInputForm}
+      props={{ submit: (input: string) => {} }}
+    ></SubmitWrapper>
   );
 }

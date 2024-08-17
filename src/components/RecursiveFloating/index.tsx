@@ -4,11 +4,13 @@ interface RecursiveFloatingContainerProps
   extends React.ComponentPropsWithoutRef<"div"> {
   children: JSX.Element;
   floating: string;
+  initial?: "visible" | "hidden" | "inherit";
 }
 
 export default function RecursiveFloatingContainer({
   children,
   floating,
+  initial = "hidden",
   ...props
 }: RecursiveFloatingContainerProps) {
   const container = useRef<HTMLDivElement>(null);
@@ -27,7 +29,7 @@ export default function RecursiveFloatingContainer({
 
     if (firstElement) {
       recursiveAttach(firstElement, (element: Element) => {
-        element.setAttribute("style", "visibility: hidden");
+        element.setAttribute("style", `visibility: ${initial}`);
         element.addEventListener("animationstart", () => {
           element.nextElementSibling?.removeAttribute("style");
           element.nextElementSibling?.classList.add(floating);
