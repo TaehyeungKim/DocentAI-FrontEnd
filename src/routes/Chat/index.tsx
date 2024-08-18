@@ -1,5 +1,5 @@
 import { ArrowBack, Edit } from "@/assets/icons";
-import { ChatInput, ChatMain } from "@/components/ChatRelated";
+import { ChatUserInput, ChatContent } from "@/components/ChatRelated";
 import { useRecoilState } from "recoil";
 import {
   ChatTopicState,
@@ -71,8 +71,8 @@ export default function Chat({ title }: ChatProps) {
         <h3 className="text-primary text-semi-large ml-3 font-bold">{title}</h3>
         <button className="w-icon aspect-square ml-auto">{Edit()}</button>
       </header>
-      <ChatMain />
-      <ChatInput />
+      <ChatContent />
+      <ChatUserInput />
     </div>
   );
 }

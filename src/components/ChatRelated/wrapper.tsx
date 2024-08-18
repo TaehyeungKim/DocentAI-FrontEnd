@@ -1,20 +1,20 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRecoilState } from "recoil";
 import { ChatStateType, ChatOnTopicState } from "@/state";
-import { ChatAnswer, ChatData } from "./type";
+import { ChatAnswer, ChatData, WrapperInnerFormInterface } from "./type";
 import { SendQuestion } from "@/api/api";
-import { ChatSubmitComponentProps } from ".";
+import { ChatSubmitComponentProps } from "@/components/ChatRelated/type";
 
 interface SubmitWrapperProps<T extends ChatSubmitComponentProps> {
   Form: ({ ...props }: T) => JSX.Element;
-  props: T;
+  props?: Omit<T, keyof WrapperInnerFormInterface>;
 }
 
 export type Submitter = (input: string) => void;
 
 export function SubmitWrapper<T extends ChatSubmitComponentProps>({
   Form,
-  ...props
+  props,
 }: SubmitWrapperProps<T>) {
   const [chatOnTopicData, setChatOnTopicData] = useRecoilState<
     ChatStateType | undefined
@@ -24,7 +24,7 @@ export function SubmitWrapper<T extends ChatSubmitComponentProps>({
     null
   );
 
-  const submit = useCallback(
+  const submit: Submitter = useCallback(
     (input: string) => {
       if (chatOnTopicData) {
         setChatOnTopicData({
@@ -57,6 +57,11 @@ export function SubmitWrapper<T extends ChatSubmitComponentProps>({
     [chatOnTopicData]
   );
 
+  const p: T = useMemo(
+    () => (props ? ({ ...props, submit } as T) : ({ submit } as T)),
+    [submit, props]
+  );
+
   useEffect(() => {
     if (tempResponseStore && chatOnTopicData) {
       const targetData = chatOnTopicData.data.find(
@@ -76,5 +81,5 @@ export function SubmitWrapper<T extends ChatSubmitComponentProps>({
     }
   }, [tempResponseStore]);
 
-  return <Form {...{ ...props.props, submit }} />;
+  return <Form {...p} />;
 }
