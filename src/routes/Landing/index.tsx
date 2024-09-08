@@ -1,8 +1,20 @@
 import { LandingEllipses } from "@/components/LandingRelated";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import RecursiveFloatingContainer from "@/components/RecursiveFloating";
 
 export default function Landing() {
+  const navigate = useNavigate();
+
+  // 5초 후 메인 페이지로 이동하도록 했어유
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate("/main");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
   return (
     <div className="relative bg-gradient-to-b from-white to-gradient-end w-full h-full flex flex-col items-center justify-center">
       <LandingBackground />
