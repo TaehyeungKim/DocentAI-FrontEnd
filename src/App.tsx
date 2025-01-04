@@ -15,6 +15,7 @@ function App() {
             <Route path="/" Component={Landing} />
             <Route path="/chat" element={<Chat title={"이건희 컬렉션"} />} />
             <Route path="/main" Component={Main} />
+            <Route path="/auth" />
           </Routes>
         </BrowserRouter>
       </Frame>
