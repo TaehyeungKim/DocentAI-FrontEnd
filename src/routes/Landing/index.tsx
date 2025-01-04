@@ -1,4 +1,7 @@
-import { LandingEllipses } from "@/components/LandingRelated";
+import {
+  LandingEllipses,
+  LandingLoginButtons,
+} from "@/components/LandingRelated";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import RecursiveFloatingContainer from "@/components/RecursiveFloating";
@@ -7,29 +10,30 @@ export default function Landing() {
   const navigate = useNavigate();
 
   // 5초 후 메인 페이지로 이동하도록 했어유
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate("/main");
-    }, 5000);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     navigate("/main");
+  //   }, 5000);
 
-    return () => clearTimeout(timer);
-  }, [navigate]);
+  //   return () => clearTimeout(timer);
+  // }, [navigate]);
 
   return (
     <div className="relative bg-gradient-to-b from-white to-gradient-end w-full h-full flex flex-col items-center justify-center">
       <LandingBackground />
-      <LandingTitle />
+      <LandingContent />
     </div>
   );
 }
 
-function LandingTitle() {
+function LandingContent() {
   return (
     <div className="text-center text-primary">
       <RecursiveFloatingContainer floating="titleFloating">
         <>
           <h5 className="font-large text-large ">내 손안의 도슨트</h5>
           <h1 className="font-largest text-largest">DocentAI</h1>
+          <LandingLogin />
         </>
       </RecursiveFloatingContainer>
     </div>
@@ -56,6 +60,14 @@ function LandingBackground() {
           <LandingEllipses className="w-ellipse-base border-third -bottom-[80px] -right-[80px]" />
         </>
       </RecursiveFloatingContainer>
+    </div>
+  );
+}
+
+function LandingLogin() {
+  return (
+    <div className="absolute bottom-9 left-0 w-frame-width flex justify-center">
+      <LandingLoginButtons></LandingLoginButtons>
     </div>
   );
 }

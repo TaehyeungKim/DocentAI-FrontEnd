@@ -1,4 +1,5 @@
 import React from "react";
+import { KakaoLoginButton } from "./LoginButton";
 
 interface LandingEllipsesProps {
   className: string;
@@ -13,3 +14,11 @@ export function LandingEllipses({ className, style }: LandingEllipsesProps) {
     ></div>
   );
 }
+
+export const LandingLoginButtons = () => {
+  return (
+    <div className="flex flex-col w-[80%]">
+      <KakaoLoginButton />
+    </div>
+  );
+};
