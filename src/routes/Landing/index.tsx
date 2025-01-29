@@ -3,20 +3,40 @@ import {
   LandingLoginButtons,
 } from "@/components/LandingRelated";
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+
 import RecursiveFloatingContainer from "@/components/RecursiveFloating";
+import { useSupabase } from "@/supabase/useSupabase";
+import { Session } from "@supabase/supabase-js";
+import { instance } from "@/api/api";
+import { useNavigate } from "react-router-dom";
+
+const handleSession = async (session: Session) => {
+  const { access_token, refresh_token } = session;
+  try {
+    await instance.get("/api/v1/user/kakao/callback", {
+      params: {
+        access_token,
+        refresh_token,
+      },
+    });
+    return true;
+  } catch (e) {
+    console.log(e);
+    throw new Error("세션 이상");
+  }
+};
 
 export default function Landing() {
+  const { client, session } = useSupabase();
   const navigate = useNavigate();
 
-  // 5초 후 메인 페이지로 이동하도록 했어유
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     navigate("/main");
-  //   }, 5000);
-
-  //   return () => clearTimeout(timer);
-  // }, [navigate]);
+  useEffect(() => {
+    if (session) {
+      handleSession(session).then((res) => {
+        navigate("/main");
+      });
+    }
+  }, [session]);
 
   return (
     <div className="relative bg-gradient-to-b from-white to-gradient-end w-full h-full flex flex-col items-center justify-center">

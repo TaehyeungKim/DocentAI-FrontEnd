@@ -4,23 +4,25 @@ import Landing from "@/routes/Landing/index";
 import Chat from "@/routes/Chat";
 import Frame from "@/layout/frame";
 import Main from "./routes/Main";
-import Auth from "@/routes/Auth";
+
 import { RecoilRoot } from "recoil";
+import { SupabaseAuthProvider } from "./supabase";
 
 function App() {
   return (
-    <RecoilRoot>
-      <Frame>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" Component={Landing} />
-            <Route path="/chat" element={<Chat title={"이건희 컬렉션"} />} />
-            <Route path="/main" Component={Main} />
-            <Route path="/auth" Component={Auth} />
-          </Routes>
-        </BrowserRouter>
-      </Frame>
-    </RecoilRoot>
+    <SupabaseAuthProvider>
+      <RecoilRoot>
+        <Frame>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" Component={Landing} />
+              <Route path="/chat" element={<Chat title={"이건희 컬렉션"} />} />
+              <Route path="/main" Component={Main} />
+            </Routes>
+          </BrowserRouter>
+        </Frame>
+      </RecoilRoot>
+    </SupabaseAuthProvider>
   );
 }
 
