@@ -1,5 +1,18 @@
 import { ChatQuestion } from "./type";
 import { ChatAnswer } from "@/components/ChatRelated/type";
+import axios from "axios";
+
+export const instance = axios.create({
+  baseURL: "http://127.0.0.1:8000",
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+});
+
+instance.interceptors.response.use((response) => {
+  return response;
+});
 
 export const SendQuestion = (data: ChatQuestion): Promise<ChatAnswer> => {
   //before connecting api
