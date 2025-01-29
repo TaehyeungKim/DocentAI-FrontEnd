@@ -4,6 +4,7 @@ import Landing from "@/routes/Landing/index";
 import Chat from "@/routes/Chat";
 import Frame from "@/layout/frame";
 import Main from "./routes/Main";
+import Auth from "@/routes/Auth";
 import { RecoilRoot } from "recoil";
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
             <Route path="/" Component={Landing} />
             <Route path="/chat" element={<Chat title={"이건희 컬렉션"} />} />
             <Route path="/main" Component={Main} />
-            <Route path="/auth" />
+            <Route path="/auth" Component={Auth} />
           </Routes>
         </BrowserRouter>
       </Frame>

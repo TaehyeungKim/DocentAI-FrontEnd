@@ -17,7 +17,7 @@ export function LandingEllipses({ className, style }: LandingEllipsesProps) {
 
 export const LandingLoginButtons = () => {
   return (
-    <div className="flex flex-col w-[80%]">
+    <div className="flex flex-col w-[80%] items-center">
       <KakaoLoginButton />
     </div>
   );
