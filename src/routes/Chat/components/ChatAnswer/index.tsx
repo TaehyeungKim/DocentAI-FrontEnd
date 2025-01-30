@@ -3,7 +3,7 @@ import AIProfile from "@/assets/icons/aiChat.png";
 import RecursiveFloatingContainer from "@/components/RecursiveFloating";
 import ChatBubble from "../ChatBubble";
 import { Copy, Refresh } from "@/assets/icons";
-import ChatSubQuestion from "@/components/ChatRelated/ChatSubQuestion";
+import ChatSubQuestion from "@/routes/Chat/components/ChatSubQuestion";
 
 export default function ChatAnswerContainer({
   answer,

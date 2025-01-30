@@ -1,5 +1,5 @@
-import { ChatSubQuestionFormProps } from "@/components/ChatRelated/type";
-import { SubmitWrapper } from "@/components/ChatRelated/wrapper";
+import { ChatSubQuestionFormProps } from "@/routes/Chat/components/type";
+import { SubmitWrapper } from "@/routes/Chat/components/wrapper";
 
 function ChatSubQuestionForm({ question, submit }: ChatSubQuestionFormProps) {
   return (

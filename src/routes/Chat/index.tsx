@@ -1,5 +1,4 @@
-import { ArrowBack, Edit } from "@/assets/icons";
-import { ChatUserInput, ChatContent } from "@/components/ChatRelated";
+import { ChatUserInput, ChatContent } from "@/routes/Chat/components";
 import { useRecoilState } from "recoil";
 import {
   ChatTopicState,
@@ -9,14 +8,13 @@ import {
   ChatState,
 } from "@/state";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { BackButton } from "@/components/BackButton";
+import { HeaderLayout } from "@/components/HeaderLayout";
 
-interface ChatProps {
-  title: string;
-}
-
-export default function Chat({ title }: ChatProps) {
+export default function Chat() {
   const navigate = useNavigate();
+  const { exhibitionId, pieceId } = useParams();
 
   const [topic, setTopic] = useRecoilState<ChatTopicStateType>(ChatTopicState);
 
@@ -28,22 +26,22 @@ export default function Chat({ title }: ChatProps) {
   >(ChatOnTopicState);
 
   useEffect(() => {
-    setTopic(title);
-  }, []);
+    pieceId && setTopic(pieceId);
+  }, [pieceId]);
 
   useEffect(() => {
     if (topic && !chatOnTopicData)
       setAllChatData([
         ...allChatData,
         {
-          name: title,
+          name: topic,
           data: [
             {
               id: 0,
               answer: {
                 id: 0,
                 type: "answer",
-                answer: `${title}에 오신 것을 환영합니다.`,
+                answer: `${topic}에 오신 것을 환영합니다.`,
                 sub: [
                   "작품 설명해줘",
                   "작가 설명해줘",
@@ -61,16 +59,15 @@ export default function Chat({ title }: ChatProps) {
 
   return (
     <div className="flex flex-col h-screen">
-      <header className=" flex flex-row py-3 px-5 items-center shadow-chat-header">
-        <button
-          className="w-icon aspect-square"
-          onClick={() => navigate("/main")}
-        >
-          {ArrowBack()}
-        </button>
-        <h3 className="text-primary text-semi-large ml-3 font-bold">{title}</h3>
-        <button className="w-icon aspect-square ml-auto">{Edit()}</button>
-      </header>
+      <HeaderLayout className="shadow-chat-header">
+        <div className="flex flex-row">
+          <BackButton
+            onClickBack={() => navigate(`/search/${exhibitionId}`)}
+          ></BackButton>
+          <h3 className="headerMainTextStyle">작품 선택</h3>
+        </div>
+        <h3 className="headerMainTextStyle">소2-이중섭</h3>
+      </HeaderLayout>
       <ChatContent />
       <ChatUserInput />
     </div>

@@ -1,5 +1,5 @@
-import { ChatBubbleProps } from "@/components/ChatRelated/type";
-import { AnswerPending } from "@/components/ChatRelated/ChatAnswer";
+import { ChatBubbleProps } from "@/routes/Chat/components/type";
+import { AnswerPending } from "@/routes/Chat/components/ChatAnswer";
 import RecursiveFloatingContainer from "@/components/RecursiveFloating";
 
 export default function ChatBubble({ data, children }: ChatBubbleProps) {

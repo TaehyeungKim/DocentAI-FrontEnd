@@ -24,7 +24,7 @@ module.exports = {
         ellipse: "transform, opacity",
       },
       lineHeight: {
-        chat: "1.2rem",
+        normal: "15px",
       },
       transitionDelay: {
         ellipse: "0.1s",
