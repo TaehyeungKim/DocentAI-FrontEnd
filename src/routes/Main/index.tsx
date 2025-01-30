@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import ExhibitionItem from "@/components/MainRelated/ExhibitionItem";
 import posterImage from "../../assets/dummy-poster.png";

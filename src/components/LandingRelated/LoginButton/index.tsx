@@ -1,6 +1,5 @@
 import kakaoLoginImg from "@/assets/img/kakao_login.png";
-
-import { useSupabase } from "@/supabase/useSupabase";
+import { toKakaoLoginPage } from "@/routes/Auth/api";
 
 interface LoginButtonProps {
   loginLabel: string;
@@ -21,15 +20,11 @@ const LoginButton = ({
 };
 
 export const KakaoLoginButton = () => {
-  const { client, session } = useSupabase();
+  // const kakaoLoginPageLink = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REACT_APP_KAKAO_SECRET_KEY}&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT_URI}&response_type=code`;
 
-  const handleKakaoLoginButtonClick = async () => {
-    const { data, error } = await client.auth.signInWithOAuth({
-      provider: "kakao",
-      options: {
-        redirectTo: "https://lnsblvsrlwswhykptacr.supabase.co/auth/v1/callback",
-      },
-    });
+  const handleKakaoLoginButtonClick = () => {
+    // window.location.href = kakaoLoginPageLink;
+    toKakaoLoginPage();
   };
 
   return (
