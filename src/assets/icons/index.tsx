@@ -1,3 +1,9 @@
+import { twMerge } from "tailwind-merge";
+
+interface IconProps {
+  className?: string;
+}
+
 export const ArrowBack = () => {
   return (
     <svg
@@ -95,6 +101,82 @@ export const Refresh = () => {
           <rect width="15" height="15" fill="white" />
         </clipPath>
       </defs>
+    </svg>
+  );
+};
+
+export const SearchIcon = ({ className }: IconProps) => {
+  return (
+    <svg
+      width="100%"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        className={twMerge("stroke-[#74B38D]", className)}
+        d="M19.25 19.25L15.2625 15.2625M17.4167 10.0833C17.4167 14.1334 14.1334 17.4167 10.0833 17.4167C6.03325 17.4167 2.75 14.1334 2.75 10.0833C2.75 6.03325 6.03325 2.75 10.0833 2.75C14.1334 2.75 17.4167 6.03325 17.4167 10.0833Z"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const Navigate = () => {
+  return (
+    <svg
+      width="100%"
+      viewBox="0 0 20 19"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M15.5 10.4167V15.9167C15.5 16.4029 15.3068 16.8692 14.963 17.213C14.6192 17.5568 14.1529 17.75 13.6667 17.75H3.58333C3.0971 17.75 2.63079 17.5568 2.28697 17.213C1.94315 16.8692 1.75 16.4029 1.75 15.9167V5.83333C1.75 5.3471 1.94315 4.88079 2.28697 4.53697C2.63079 4.19315 3.0971 4 3.58333 4H9.08333M12.75 1.25H18.25M18.25 1.25V6.75M18.25 1.25L8.16667 11.3333"
+        stroke="#74B38D"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const X_icon = () => {
+  return (
+    <svg
+      width="100%"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M16.5 5.5L5.5 16.5M5.5 5.5L16.5 16.5"
+        stroke="#74B38D"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const NavigateArrow = () => {
+  return (
+    <svg
+      width="100%"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M15.5832 15.5834L6.4165 6.41675M6.4165 6.41675V15.5834M6.4165 6.41675H15.5832"
+        stroke="#74B38D"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 };

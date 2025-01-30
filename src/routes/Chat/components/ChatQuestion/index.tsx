@@ -1,5 +1,5 @@
-import { ChatQuestionContainerProps } from "@/components/ChatRelated/type";
-import ChatBubble from "@/components/ChatRelated/ChatBubble";
+import { ChatQuestionContainerProps } from "@/routes/Chat/components/type";
+import ChatBubble from "@/routes/Chat/components/ChatBubble";
 
 export default function ChatQuestionContainer({
   question,

@@ -1,5 +1,5 @@
 import { ChatQuestion } from "./type";
-import { ChatAnswer } from "@/components/ChatRelated/type";
+import { ChatAnswer } from "@/routes/Chat/components/type";
 import axios from "axios";
 
 export const instance = axios.create({

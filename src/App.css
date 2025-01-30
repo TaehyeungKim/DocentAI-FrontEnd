@@ -93,3 +93,7 @@
 .bubbleAnswerStyle {
   @apply rounded-tl-none bg-chatbubble;
 }
+
+.headerMainTextStyle {
+  @apply text-primary text-semi-large ml-3 font-bold;
+}

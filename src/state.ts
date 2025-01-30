@@ -1,5 +1,5 @@
 import { atom, selector } from "recoil";
-import type { ChatData } from "./components/ChatRelated/type";
+import type { ChatData } from "./routes/Chat/components/type";
 
 export type ChatStateType = {
   name: string;

@@ -3,7 +3,7 @@ import { useRecoilState } from "recoil";
 import { ChatStateType, ChatOnTopicState } from "@/state";
 import { ChatAnswer, ChatData, WrapperInnerFormInterface } from "./type";
 import { SendQuestion } from "@/api/api";
-import { ChatSubmitComponentProps } from "@/components/ChatRelated/type";
+import { ChatSubmitComponentProps } from "@/routes/Chat/components/type";
 
 interface SubmitWrapperProps<T extends ChatSubmitComponentProps> {
   Form: ({ ...props }: T) => JSX.Element;
