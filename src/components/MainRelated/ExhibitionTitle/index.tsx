@@ -5,7 +5,7 @@ type ExhibitionTitleProps = {
 };
 
 const ExhibitionTitle: React.FC<ExhibitionTitleProps> = ({ title }) => (
-  <h3 className="text-gray-900 text-base font-medium leading-tight">{title}</h3>
+  <h3 className="text-gray-900 text-[15px] font-semibold">{title}</h3>
 );
 
 export default ExhibitionTitle;
