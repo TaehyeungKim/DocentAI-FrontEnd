@@ -19,19 +19,19 @@ const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
   onClick,
 }) => (
   <div
-    className="w-full max-w-full p-0 flex flex-row justify-start items-stretch gap-4 border-2 border-primary rounded-lg cursor-pointer "
+    className="w-full max-w-full flex flex-col justify-start items-start shadow-[2px_2px_8px_0px_rgba(0,0,0,0.10)] border-2 hover:border-primary rounded-xl cursor-pointer"
     onClick={onClick}
   >
-    <div className="w-[150px] h-full">
+    <div className="w-full h-full">
       <img
         src={image}
         alt={altText}
-        className="w-full h-full object-cover m-0 px-0 py-1"
+        className="w-[330px] h-[152px] object-fill py-1"
         style={{ display: "block" }}
       />
     </div>
 
-    <div className="flex flex-col justify-start py-4 px-2">
+    <div className="flex flex-col justify-start py-4 px-3">
       <ExhibitionTitle title={title} />
       <ExhibitionDate date={date} />
     </div>
